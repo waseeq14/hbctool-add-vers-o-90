@@ -89,7 +89,7 @@ def read_all_func(hasm, hbc):
 def read_func(func_asms, i):
     func_asm = func_asms[i]
 
-    m = re.search(r"Function<.*?>([0-9]+)\(([0-9]+) params, ([0-9]+) registers,\s?([0-9]+) symbols\):\n(.+?)\nEndFunction", func_asm, re.DOTALL)
+    m = re.search(r"Function<.*?>([0-9]+)\(([0-9]+) params, ([0-9]+) registers,\s?([0-9]+) symbols\):\n(.*?)EndFunction", func_asm, re.DOTALL)
     assert m, f"Malicious function header: {func_asm}"
 
     functionName = m.group(1)
@@ -130,9 +130,11 @@ def read_func(func_asms, i):
 
 def load(path):
     assert os.path.exists(path), f"{path} does not exists."
-    assert os.path.exists(f"{path}/metadata.json"), f"metadata.json not found."
-    assert os.path.exists(f"{path}/string.json"), f"string.json not found."
-    assert os.path.exists(f"{path}/instruction.hasm"), f"instruction.hasm not found."
+    if os.path.isfile(path):
+        path = os.path.dirname(path)
+    assert os.path.exists(f"{path}/metadata.json"), f"{path}/metadata.json not found."
+    assert os.path.exists(f"{path}/string.json"), f"{path}/string.json not found."
+    assert os.path.exists(f"{path}/instruction.hasm"), f"{path}/instruction.hasm not found."
 
     f = open(f"{path}/metadata.json", "r")
     hbc = hbcl.loado(json.load(f))
